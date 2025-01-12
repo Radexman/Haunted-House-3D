@@ -20,6 +20,7 @@ const scene = new THREE.Scene();
 // Textures
 const textureLoader = new THREE.TextureLoader();
 
+// Floor textures
 const floorAlphaTexture = textureLoader.load('./floor/alpha.jpg');
 
 const floorColorTexture = textureLoader.load('./floor/color.jpg');
@@ -42,6 +43,22 @@ const floorNormalTexture = textureLoader.load('./floor/normal.jpg');
 floorNormalTexture.repeat.set(5, 5);
 floorNormalTexture.wrapS = THREE.RepeatWrapping;
 floorNormalTexture.wrapT = THREE.RepeatWrapping;
+
+// Walls textures
+const wallsColorTexture = textureLoader.load('./walls/color.jpg');
+wallsColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+const wallsARMTexture = textureLoader.load('./walls/arm.jpg');
+
+const wallsNormalTexture = textureLoader.load('./walls/normal.jpg');
+
+// Roof textures
+const roofColorTexture = textureLoader.load('./roof/color.jpg');
+roofColorTexture.colorSpace = THREE.SRGBColorSpace;
+
+const roofARMTexture = textureLoader.load('./roof/arm.jpg');
+
+const roofNormalTexture = textureLoader.load('./roof/normal.jpg');
 
 // Floor
 const floor = new THREE.Mesh(
@@ -71,12 +88,30 @@ const house = new THREE.Group();
 scene.add(house);
 
 // Walls
-const walls = new THREE.Mesh(new THREE.BoxGeometry(4, 2.5, 4), new THREE.MeshStandardMaterial());
+const walls = new THREE.Mesh(
+	new THREE.BoxGeometry(4, 2.5, 4),
+	new THREE.MeshStandardMaterial({
+		map: wallsColorTexture,
+		aoMap: wallsARMTexture,
+		roughnessMap: wallsARMTexture,
+		metalnessMap: wallsARMTexture,
+		normalMap: wallsNormalTexture,
+	})
+);
 walls.position.y = 1.25;
 house.add(walls);
 
 // Roof
-const roof = new THREE.Mesh(new THREE.ConeGeometry(3.3, 1.3, 4), new THREE.MeshStandardMaterial());
+const roof = new THREE.Mesh(
+	new THREE.ConeGeometry(3.3, 1.3, 4),
+	new THREE.MeshStandardMaterial({
+		map: roofColorTexture,
+		aoMap: roofARMTexture,
+		roughnessMap: roofARMTexture,
+		metalnessMap: roofARMTexture,
+		normalMap: roofNormalTexture,
+	})
+);
 roof.position.y = 2.5 + 1.3 / 2;
 roof.rotation.y = Math.PI * 0.25;
 house.add(roof);
