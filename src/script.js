@@ -22,16 +22,49 @@ const textureLoader = new THREE.TextureLoader();
 
 const floorAlphaTexture = textureLoader.load('./floor/alpha.jpg');
 
+const floorColorTexture = textureLoader.load('./floor/color.jpg');
+floorColorTexture.colorSpace = THREE.SRGBColorSpace;
+floorColorTexture.repeat.set(5, 5);
+floorColorTexture.wrapS = THREE.RepeatWrapping;
+floorColorTexture.wrapT = THREE.RepeatWrapping;
+
+const floorARMTexture = textureLoader.load('./floor/arm.jpg');
+floorARMTexture.repeat.set(5, 5);
+floorARMTexture.wrapS = THREE.RepeatWrapping;
+floorARMTexture.wrapT = THREE.RepeatWrapping;
+
+const floorDisplacementTexture = textureLoader.load('./floor/displacement.jpg');
+floorDisplacementTexture.repeat.set(5, 5);
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping;
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping;
+
+const floorNormalTexture = textureLoader.load('./floor/normal.jpg');
+floorNormalTexture.repeat.set(5, 5);
+floorNormalTexture.wrapS = THREE.RepeatWrapping;
+floorNormalTexture.wrapT = THREE.RepeatWrapping;
+
 // Floor
 const floor = new THREE.Mesh(
-	new THREE.PlaneGeometry(20, 20),
+	new THREE.PlaneGeometry(20, 20, 100, 100),
 	new THREE.MeshStandardMaterial({
 		alphaMap: floorAlphaTexture,
 		transparent: true,
+		map: floorColorTexture,
+		aoMap: floorARMTexture,
+		roughnessMap: floorARMTexture,
+		metalnessMap: floorARMTexture,
+		normalMap: floorNormalTexture,
+		displacementMap: floorDisplacementTexture,
+		displacementScale: 0.15,
+		displacementBias: -0.13,
 	})
 );
 floor.rotation.x = -Math.PI * 0.5;
 scene.add(floor);
+
+const floorFolder = gui.addFolder('Floor');
+floorFolder.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('Floor Displacement Scale');
+floorFolder.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name('Floor Displacement Bias');
 
 // House container
 const house = new THREE.Group();
