@@ -98,7 +98,16 @@ const doorNormalTexture = textureLoader.load('./door/normal.webp');
 const doorMetalnessTexture = textureLoader.load('./door/metalness.webp');
 const doorRoughnessTexture = textureLoader.load('./door/roughness.webp');
 
-// Door textures
+// Window textures
+const windowColorTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_basecolor.jpg');
+windowColorTexture.colorSpace = THREE.SRGBColorSpace;
+const windowAmbientOcclustionTexture = textureLoader.load(
+	'./window/Wood_Window_001/Wood_Window_001_ambientOcclusion.jpg'
+);
+const windowHeightTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_height.png');
+const windowNormalTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_normal.jpg');
+const windowRoughnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_roughness.jpg');
+const windowMetalnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_metallic.jpg');
 
 // Floor
 const floor = new THREE.Mesh(
@@ -169,12 +178,41 @@ const door = new THREE.Mesh(
 		displacementBias: -0.04,
 		normalMap: doorNormalTexture,
 		metalnessMap: doorMetalnessTexture,
-		roughness: doorRoughnessTexture,
+		roughnessMap: doorRoughnessTexture,
 	})
 );
 door.position.y = 1;
 door.position.z = 2 + 0.01;
 house.add(door);
+
+// Window
+const windowElementGeometry = new THREE.PlaneGeometry(1.2, 1.2, 10, 10);
+const windowElementMaterial = new THREE.MeshStandardMaterial({
+	map: windowColorTexture,
+	aoMap: windowAmbientOcclustionTexture,
+	displacementMap: windowHeightTexture,
+	displacementScale: 0.02,
+	displacementBias: 0.04,
+	normalMap: windowNormalTexture,
+	roughnessMap: windowRoughnessTexture,
+	metalnessMap: windowMetalnessTexture,
+});
+
+// Window one
+const windowElementOne = new THREE.Mesh(windowElementGeometry, windowElementMaterial);
+windowElementOne.rotation.y = Math.PI * 0.5;
+windowElementOne.position.x = 2 + 0.0001;
+windowElementOne.position.y = 2.5 / 2;
+
+// Window two
+const windowElementTwo = new THREE.Mesh(windowElementGeometry, windowElementMaterial);
+windowElementTwo.rotation.y = Math.PI * -0.5;
+windowElementTwo.position.x = -2 - 0.0001;
+windowElementTwo.position.y = 2.5 / 2;
+
+// Window three todo
+
+house.add(windowElementOne, windowElementTwo);
 
 // Bushes
 const bushGeometry = new THREE.SphereGeometry(1, 16, 16);
@@ -290,7 +328,7 @@ window.addEventListener('resize', () => {
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(4, 2, 5);
+camera.position.set(8, 2, 1);
 scene.add(camera);
 
 // Controls
