@@ -109,9 +109,15 @@ const windowNormalTexture = textureLoader.load('./window/Wood_Window_001/Wood_Wi
 const windowRoughnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_roughness.jpg');
 const windowMetalnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_metallic.jpg');
 
+// Plank textures
+const plankColorTexture = textureLoader.load('./plank/worn_planks_diff_1k.jpg');
+plankColorTexture.colorSpace = THREE.SRGBColorSpace;
+const plankARMTexture = textureLoader.load('./plank/worn_planks_arm_1k.jpg');
+const plankNormalTexture = textureLoader.load('./plank/worn_planks_nor_gl_1k.jpg');
+
 // Floor
 const floor = new THREE.Mesh(
-	new THREE.PlaneGeometry(20, 20, 100, 100),
+	new THREE.PlaneGeometry(25, 25, 100, 100),
 	new THREE.MeshStandardMaterial({
 		alphaMap: floorAlphaTexture,
 		transparent: true,
@@ -135,6 +141,89 @@ floorFolder.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).n
 // House container
 const house = new THREE.Group();
 scene.add(house);
+
+// Tower
+const tower = new THREE.Group();
+tower.position.z = -7;
+tower.position.x = -4;
+scene.add(tower);
+
+const towerWalls = new THREE.Mesh(
+	new THREE.BoxGeometry(3, 6, 3),
+	new THREE.MeshStandardMaterial({
+		map: wallsColorTexture,
+		aoMap: wallsARMTexture,
+		roughnessMap: wallsARMTexture,
+		metalnessMap: wallsARMTexture,
+		normalMap: wallsNormalTexture,
+	})
+);
+towerWalls.position.y = 6 / 2;
+tower.add(towerWalls);
+
+// Tower roof
+const towerRoof = new THREE.Mesh(
+	new THREE.ConeGeometry(2.5, 1.3, 4),
+	new THREE.MeshStandardMaterial({
+		map: roofColorTexture,
+		aoMap: roofARMTexture,
+		roughnessMap: roofARMTexture,
+		metalnessMap: roofARMTexture,
+		normalMap: roofNormalTexture,
+	})
+);
+towerRoof.position.y = 6 + (1.3 * 3) / 2;
+towerRoof.rotation.y = Math.PI * 0.25;
+tower.add(towerRoof);
+
+// Tower plank
+const towerPlankGeometry = new THREE.BoxGeometry(0.15, 1.3, 0.15);
+const towerPlankMaterial = new THREE.MeshStandardMaterial({
+	map: plankColorTexture,
+	aoMap: plankARMTexture,
+	roughnessMap: plankARMTexture,
+	metalnessMap: plankARMTexture,
+	normalMap: plankNormalTexture,
+});
+
+// Plank one
+const towerPlankOne = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
+towerPlankOne.position.y = 6 + 1.3 / 2;
+towerPlankOne.position.x = 1.5 - 0.15 / 2;
+towerPlankOne.position.z = 1.5 - 0.15 / 2;
+tower.add(towerPlankOne);
+
+// Plank two
+const towerPlankTwo = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
+towerPlankTwo.position.y = 6 + 1.3 / 2;
+towerPlankTwo.position.x = -1.5 + 0.15 / 2;
+towerPlankTwo.position.z = 1.5 - 0.15 / 2;
+tower.add(towerPlankTwo);
+
+// Plank three
+const towerPlankThree = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
+towerPlankThree.position.y = 6 + 1.3 / 2;
+towerPlankThree.position.x = 1.5 - 0.15 / 2;
+towerPlankThree.position.z = -1.5 + 0.15 / 2;
+tower.add(towerPlankThree);
+
+// Plank four
+const towerPlankFour = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
+towerPlankFour.position.y = 6 + 1.3 / 2;
+towerPlankFour.position.x = -1.5 + 0.15 / 2;
+towerPlankFour.position.z = -1.5 + 0.15 / 2;
+tower.add(towerPlankFour);
+
+// Znicz
+const points = [];
+for (let i = 0; i < 10; i++) {
+	points.push(new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2));
+}
+const geometry = new THREE.LatheGeometry(points);
+const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+const lathe = new THREE.Mesh(geometry, material);
+lathe.position.y = 6;
+tower.add(lathe);
 
 // Walls
 const walls = new THREE.Mesh(
@@ -210,9 +299,14 @@ windowElementTwo.rotation.y = Math.PI * -0.5;
 windowElementTwo.position.x = -2 - 0.0001;
 windowElementTwo.position.y = 2.5 / 2;
 
-// Window three todo
+// Window three
+const windowElementThree = new THREE.Mesh(windowElementGeometry, windowElementMaterial);
+windowElementThree.rotation.y = Math.PI;
+windowElementThree.position.z = -2 - 0.0001;
+windowElementThree.position.y = 2.5 / 2;
+windowElementThree.scale.x = 2;
 
-house.add(windowElementOne, windowElementTwo);
+house.add(windowElementOne, windowElementTwo, windowElementThree);
 
 // Bushes
 const bushGeometry = new THREE.SphereGeometry(1, 16, 16);
@@ -263,7 +357,7 @@ scene.add(graves);
 for (let i = 0; i < 30; i++) {
 	// Coordinates
 	const angle = Math.random() * Math.PI * 2;
-	const radius = 3 + Math.random() * 4;
+	const radius = 3 + Math.random() * 6;
 	const x = Math.sin(angle) * radius;
 	const y = Math.random() * 0.4;
 	const z = Math.cos(angle) * radius;
@@ -303,7 +397,7 @@ house.add(doorLight);
 const ghostOne = new THREE.PointLight('#8800ff', 6);
 const ghostTwo = new THREE.PointLight('#ff0088', 6);
 const ghostThree = new THREE.PointLight('#ff0000', 6);
-scene.add(ghostOne, ghostTwo, ghostThree);
+// scene.add(ghostOne, ghostTwo, ghostThree);
 
 // Sizes
 const sizes = {
@@ -328,8 +422,9 @@ window.addEventListener('resize', () => {
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(8, 2, 1);
+camera.position.set(-4, 3, 8);
 scene.add(camera);
+camera.lookAt(tower.position);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
