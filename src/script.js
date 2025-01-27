@@ -231,6 +231,97 @@ towerDoor.position.z = 1.5 + 0.0001;
 towerDoor.position.y = 2.2 / 2 + 0.4;
 tower.add(towerDoor);
 
+// Tower window
+const towerWindowGeometry = new THREE.PlaneGeometry(0.5, 0.5, 10, 10);
+const towerWindowMaterial = new THREE.MeshStandardMaterial({
+	map: windowColorTexture,
+	aoMap: windowAmbientOcclustionTexture,
+	displacementMap: windowHeightTexture,
+	displacementScale: 0.02,
+	displacementBias: 0.04,
+	normalMap: windowNormalTexture,
+	roughnessMap: windowRoughnessTexture,
+	metalnessMap: windowMetalnessTexture,
+});
+
+// Window one
+const towerWindowOne = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowOne.position.y = 2.2 + 1.3;
+towerWindowOne.position.z = 1.5 + 0.0001;
+
+// Window two
+const towerWindowTwo = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowTwo.position.y = 2.2 + 2.6;
+towerWindowTwo.position.z = 1.5 + 0.0001;
+
+// Window three
+const towerWindowThree = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowThree.rotation.y = Math.PI * 0.5;
+towerWindowThree.position.x = 1.5 + 0.0001;
+towerWindowThree.position.y = 2.2;
+
+// Window four
+const towerWindowFour = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowFour.rotation.y = Math.PI * 0.5;
+towerWindowFour.position.x = 1.5 + 0.0001;
+towerWindowFour.position.y = 2.2 + 1.3;
+
+// Window five
+const towerWindowFive = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowFive.rotation.y = Math.PI * 0.5;
+towerWindowFive.position.x = 1.5 + 0.0001;
+towerWindowFive.position.y = 2.2 + 2.6;
+
+// Window six
+const towerWindowSix = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowSix.rotation.y = Math.PI * -0.5;
+towerWindowSix.position.x = -1.5 - 0.0001;
+towerWindowSix.position.y = 2.2;
+
+// Window seven
+const towerWindowSeven = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowSeven.rotation.y = Math.PI * -0.5;
+towerWindowSeven.position.x = -1.5 - 0.0001;
+towerWindowSeven.position.y = 2.2 + 1.3;
+
+// Window eight
+const towerWindowEight = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowEight.rotation.y = Math.PI * -0.5;
+towerWindowEight.position.x = -1.5 - 0.0001;
+towerWindowEight.position.y = 2.2 + 2.6;
+
+// Window Nine
+const towerWindowNine = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowNine.rotation.y = Math.PI;
+towerWindowNine.position.z = -1.5 - 0.0001;
+towerWindowNine.position.y = 2.2;
+
+// Window Ten
+const towerWindowTen = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowTen.rotation.y = Math.PI;
+towerWindowTen.position.z = -1.5 - 0.0001;
+towerWindowTen.position.y = 2.2 + 1.3;
+
+// Window Eleven
+const towerWindowEleven = new THREE.Mesh(towerWindowGeometry, towerWindowMaterial);
+towerWindowEleven.rotation.y = Math.PI;
+towerWindowEleven.position.z = -1.5 - 0.0001;
+towerWindowEleven.position.y = 2.2 + 2.6;
+
+tower.add(
+	towerWindowOne,
+	towerWindowTwo,
+	towerWindowThree,
+	towerWindowFour,
+	towerWindowFive,
+	towerWindowSix,
+	towerWindowSeven,
+	towerWindowEight,
+	towerWindowNine,
+	towerWindowTen,
+	towerWindowEleven
+);
+
 // Function to create a tree with variations
 function createTree(x, y, z, pineHeight, pineRadius, stumpHeight, stumpRadius) {
 	const pineGeometry = new THREE.ConeGeometry(pineRadius, pineHeight, 24);
@@ -494,7 +585,7 @@ window.addEventListener('resize', () => {
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(-4, 1.5, 6);
+camera.position.set(-5.5, 1.5, 10);
 scene.add(camera);
 
 // Controls
