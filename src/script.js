@@ -99,21 +99,21 @@ const doorMetalnessTexture = textureLoader.load('./door/metalness.webp');
 const doorRoughnessTexture = textureLoader.load('./door/roughness.webp');
 
 // Window textures
-const windowColorTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_basecolor.jpg');
+const windowColorTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_basecolor.webp');
 windowColorTexture.colorSpace = THREE.SRGBColorSpace;
 const windowAmbientOcclustionTexture = textureLoader.load(
-	'./window/Wood_Window_001/Wood_Window_001_ambientOcclusion.jpg'
+	'./window/Wood_Window_001/Wood_Window_001_ambientOcclusion.webp'
 );
 const windowHeightTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_height.png');
-const windowNormalTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_normal.jpg');
-const windowRoughnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_roughness.jpg');
-const windowMetalnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_metallic.jpg');
+const windowNormalTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_normal.webp');
+const windowRoughnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_roughness.webp');
+const windowMetalnessTexture = textureLoader.load('./window/Wood_Window_001/Wood_Window_001_metallic.webp');
 
 // Plank textures
-const plankColorTexture = textureLoader.load('./plank/worn_planks_diff_1k.jpg');
+const plankColorTexture = textureLoader.load('./plank/worn_planks_diff_1k.webp');
 plankColorTexture.colorSpace = THREE.SRGBColorSpace;
-const plankARMTexture = textureLoader.load('./plank/worn_planks_arm_1k.jpg');
-const plankNormalTexture = textureLoader.load('./plank/worn_planks_nor_gl_1k.jpg');
+const plankARMTexture = textureLoader.load('./plank/worn_planks_arm_1k.webp');
+const plankNormalTexture = textureLoader.load('./plank/worn_planks_nor_gl_1k.webp');
 
 // Floor
 const floor = new THREE.Mesh(
@@ -186,12 +186,111 @@ const towerPlankMaterial = new THREE.MeshStandardMaterial({
 	normalMap: plankNormalTexture,
 });
 
+// Tower stairs
+const towerStairs = new THREE.Group();
+towerStairs.position.z = -5.5;
+towerStairs.position.x = -4;
+scene.add(towerStairs);
+
+const stairsGeometry = new THREE.BoxGeometry(1.6, 0.2, 2.4);
+const stairsMaterial = new THREE.MeshStandardMaterial({
+	map: graveColorTexture,
+	aoMap: graveARMTexture,
+	roughnessMap: graveARMTexture,
+	metalnessMap: graveARMTexture,
+	normalMap: graveNormalTexture,
+});
+const stepOne = new THREE.Mesh(stairsGeometry, stairsMaterial);
+
+const stepTwo = new THREE.Mesh(stairsGeometry, stairsMaterial);
+stepTwo.position.y = 0.2;
+stepTwo.scale.z = 2 / 3;
+
+const stepThree = new THREE.Mesh(stairsGeometry, stairsMaterial);
+stepThree.position.y = 0.4;
+stepThree.scale.z = 1 / 3;
+towerStairs.add(stepOne, stepTwo, stepThree);
+
+// Tower door
+const towerDoor = new THREE.Mesh(
+	new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
+	new THREE.MeshStandardMaterial({
+		map: doorColorTexture,
+		transparent: true,
+		alphaMap: doorAlphaTexture,
+		aoMap: doorAmbientOcclusionTexture,
+		displacementMap: doorHeightTexture,
+		displacementScale: 0.15,
+		displacementBias: -0.04,
+		normalMap: doorNormalTexture,
+		metalnessMap: doorMetalnessTexture,
+		roughnessMap: doorRoughnessTexture,
+	})
+);
+towerDoor.position.z = 1.5 + 0.0001;
+towerDoor.position.y = 2.2 / 2 + 0.4;
+tower.add(towerDoor);
+
+// Function to create a tree with variations
+function createTree(x, y, z, pineHeight, pineRadius, stumpHeight, stumpRadius) {
+	const pineGeometry = new THREE.ConeGeometry(pineRadius, pineHeight, 24);
+	const pineMaterial = new THREE.MeshStandardMaterial({
+		map: bushColorTexture,
+		aoMap: bushARMTexture,
+		roughnessMap: bushARMTexture,
+		metalnessMap: bushARMTexture,
+		normalMap: bushNormalTexture,
+	});
+
+	const pine = new THREE.Mesh(pineGeometry, pineMaterial);
+	pine.castShadow = true;
+	pine.receiveShadow = true;
+
+	const stumpGeometry = new THREE.CylinderGeometry(stumpRadius, stumpRadius, stumpHeight, 32);
+	const stumpMaterial = new THREE.MeshStandardMaterial({
+		map: plankColorTexture,
+		aoMap: plankARMTexture,
+		roughnessMap: plankARMTexture,
+		metalnessMap: plankARMTexture,
+		normalMap: plankNormalTexture,
+	});
+
+	const stump = new THREE.Mesh(stumpGeometry, stumpMaterial);
+	stump.position.y = -stumpHeight / 2;
+	stump.castShadow = true;
+	stump.receiveShadow = true;
+
+	const tree = new THREE.Group();
+	tree.position.set(x, y, z);
+	tree.add(pine, stump);
+
+	return tree;
+}
+
+// Creating five different trees with slight variations
+const treeOne = createTree(-6.8, 2.5, -6.5, 3, 0.8, 3, 0.1);
+const treeTwo = createTree(0.75, 2.5, -4.75, 3.2, 0.9, 3, 0.12);
+const treeThree = createTree(-12, 2.5, -5, 2.8, 0.7, 3, 0.1);
+const treeFour = createTree(-9, 2.5, -5, 3.5, 1, 3, 0.15);
+const treeFive = createTree(8, 2.5, -5, 3.1, 0.85, 3, 0.12);
+const treeSix = createTree(6, 2.5, 1, 3.1, 0.85, 3, 0.12);
+const treeSeven = createTree(5, 2.5, -9, 3.1, 0.85, 3, 0.12);
+
+// Add all trees to the scene
+scene.add(treeOne, treeTwo, treeThree, treeFour, treeFive, treeSix, treeSeven);
+
 // Plank one
 const towerPlankOne = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
 towerPlankOne.position.y = 6 + 1.3 / 2;
 towerPlankOne.position.x = 1.5 - 0.15 / 2;
 towerPlankOne.position.z = 1.5 - 0.15 / 2;
 tower.add(towerPlankOne);
+
+// Tower lamp
+const towerLamp = new THREE.PointLight('#ff7d46', 6);
+tower.add(towerLamp);
+towerLamp.position.z = 1.8;
+towerLamp.position.y = 2.2 + 0.45;
 
 // Plank two
 const towerPlankTwo = new THREE.Mesh(towerPlankGeometry, towerPlankMaterial);
@@ -217,10 +316,17 @@ tower.add(towerPlankFour);
 // Znicz
 const points = [];
 for (let i = 0; i < 10; i++) {
-	points.push(new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2));
+	points.push(new THREE.Vector2(Math.sin(i * 0.2) * 0.5 + 0.5, (i - 5) * 0.1));
 }
 const geometry = new THREE.LatheGeometry(points);
-const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+const material = new THREE.MeshStandardMaterial({
+	side: THREE.DoubleSide,
+	map: graveColorTexture,
+	aoMap: graveARMTexture,
+	roughnessMap: graveARMTexture,
+	metalnessMap: graveARMTexture,
+	normalMap: graveNormalTexture,
+});
 const lathe = new THREE.Mesh(geometry, material);
 lathe.position.y = 6;
 tower.add(lathe);
@@ -341,38 +447,6 @@ bushFour.rotation.x = -0.75;
 
 house.add(bushOne, bushTwo, bushThree, bushFour);
 
-// Graves
-const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.1);
-const graveMaterial = new THREE.MeshStandardMaterial({
-	map: graveColorTexture,
-	aoMap: graveARMTexture,
-	roughnessMap: graveARMTexture,
-	metalnessMap: graveARMTexture,
-	normalMap: graveNormalTexture,
-});
-
-const graves = new THREE.Group();
-scene.add(graves);
-
-for (let i = 0; i < 30; i++) {
-	// Coordinates
-	const angle = Math.random() * Math.PI * 2;
-	const radius = 3 + Math.random() * 6;
-	const x = Math.sin(angle) * radius;
-	const y = Math.random() * 0.4;
-	const z = Math.cos(angle) * radius;
-
-	// Mesh
-	const grave = new THREE.Mesh(graveGeometry, graveMaterial);
-	grave.position.set(x, y, z);
-	grave.rotation.x = (Math.random() - 0.5) * 0.4;
-	grave.rotation.y = (Math.random() - 0.5) * 0.4;
-	grave.rotation.z = (Math.random() - 0.5) * 0.4;
-
-	// Add graves to the group
-	graves.add(grave);
-}
-
 // Lights
 
 // Ambient light
@@ -389,15 +463,13 @@ directionalLightHelper.visible = false;
 scene.add(directionalLightHelper);
 
 // Door light
-const doorLight = new THREE.PointLight('#ff7d46', 5);
+const doorLight = new THREE.PointLight('#ff7d46', 6);
 doorLight.position.set(0, 2.2, 2.5);
 house.add(doorLight);
 
-// Ghosts
-const ghostOne = new THREE.PointLight('#8800ff', 6);
-const ghostTwo = new THREE.PointLight('#ff0088', 6);
-const ghostThree = new THREE.PointLight('#ff0000', 6);
-// scene.add(ghostOne, ghostTwo, ghostThree);
+const zniczLight = new THREE.PointLight('#ff7d46', 30);
+zniczLight.position.y = 6.6;
+tower.add(zniczLight);
 
 // Sizes
 const sizes = {
@@ -422,9 +494,8 @@ window.addEventListener('resize', () => {
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-camera.position.set(-4, 3, 8);
+camera.position.set(-4, 1.5, 6);
 scene.add(camera);
-camera.lookAt(tower.position);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -443,19 +514,16 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Cast and recieve
 directionalLight.castShadow = true;
-ghostOne.castShadow = true;
-ghostTwo.castShadow = true;
-ghostThree.castShadow = true;
+zniczLight.castShadow = true;
 
 walls.castShadow = true;
 walls.receiveShadow = true;
 roof.castShadow = true;
 floor.receiveShadow = true;
-
-for (const grave of graves.children) {
-	grave.castShadow = true;
-	grave.receiveShadow = true;
-}
+towerWalls.castShadow = true;
+towerWalls.receiveShadow = true;
+lathe.receiveShadow = true;
+lathe.castShadow = true;
 
 // Mapping
 directionalLight.shadow.mapSize.width = 256;
@@ -466,18 +534,6 @@ directionalLight.shadow.camera.bottom = -8;
 directionalLight.shadow.camera.left = -8;
 directionalLight.shadow.camera.near = 1;
 directionalLight.shadow.camera.far = 20;
-
-ghostOne.shadow.mapSize.width = 256;
-ghostOne.shadow.mapSize.height = 256;
-ghostOne.shadow.camera.far = 10;
-
-ghostTwo.shadow.mapSize.width = 256;
-ghostTwo.shadow.mapSize.height = 256;
-ghostTwo.shadow.camera.far = 10;
-
-ghostThree.shadow.mapSize.width = 256;
-ghostThree.shadow.mapSize.height = 256;
-ghostThree.shadow.camera.far = 10;
 
 // Sky
 const sky = new Sky();
@@ -500,23 +556,6 @@ const tick = () => {
 	// Timer
 	timer.update();
 	const elapsedTime = timer.getElapsed();
-
-	// Ghosts animation
-	const ghostOneAngle = elapsedTime * 0.5;
-	ghostOne.position.x = Math.cos(ghostOneAngle) * 4;
-	ghostOne.position.z = Math.sin(ghostOneAngle) * 4;
-	ghostOne.position.y = Math.sin(ghostOneAngle) * Math.sin(ghostOneAngle * 2.34) * Math.sin(ghostOneAngle * 3.45);
-
-	const ghostTwoAngle = -elapsedTime * 0.38;
-	ghostTwo.position.x = Math.cos(ghostTwoAngle) * 5;
-	ghostTwo.position.z = Math.sin(ghostTwoAngle) * 5;
-	ghostTwo.position.y = Math.sin(ghostTwoAngle) * Math.sin(ghostTwoAngle * 2.34) * Math.sin(ghostTwoAngle * 3.45);
-
-	const ghostThreeAngle = elapsedTime * 0.3;
-	ghostThree.position.x = Math.cos(ghostThreeAngle) * 6;
-	ghostThree.position.z = Math.sin(ghostThreeAngle) * 6;
-	ghostThree.position.y =
-		Math.sin(ghostThreeAngle) * Math.sin(ghostThreeAngle * 2.34) * Math.sin(ghostThreeAngle * 3.45);
 
 	// Update controls
 	controls.update();
