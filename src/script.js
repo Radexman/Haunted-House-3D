@@ -1,19 +1,32 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 import { Timer } from 'three/examples/jsm/misc/Timer.js';
 import { Sky } from 'three/examples/jsm/Addons.js';
 import GUI from 'lil-gui';
 
 // Base
 
-// Debug
-const gui = new GUI();
-
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
+
+let mixer = null;
+
+// Models
+const gltfLoader = new GLTFLoader();
+gltfLoader.load('/glTF/Fox.gltf', (gltf) => {
+	gltf.scene.scale.set(0.008, 0.008, 0.008);
+	gltf.scene.position.x = -8;
+	gltf.scene.position.z = -5;
+	scene.add(gltf.scene);
+
+	mixer = new THREE.AnimationMixer(gltf.scene);
+	const action = mixer.clipAction(gltf.animations[0]);
+	action.play();
+});
 
 // House
 
@@ -133,10 +146,6 @@ const floor = new THREE.Mesh(
 );
 floor.rotation.x = -Math.PI * 0.5;
 scene.add(floor);
-
-const floorFolder = gui.addFolder('Floor');
-floorFolder.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name('Floor Displacement Scale');
-floorFolder.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name('Floor Displacement Bias');
 
 // House container
 const house = new THREE.Group();
@@ -641,12 +650,20 @@ sky.material.uniforms['mieDirectionalG'].value = 0.95;
 sky.material.uniforms['sunPosition'].value.set(0.3, -0.038, -0.95);
 
 // Animate
-const timer = new Timer();
+const clock = new THREE.Clock();
+let previousTime = 0;
 
 const tick = () => {
 	// Timer
-	timer.update();
-	const elapsedTime = timer.getElapsed();
+	// clock.update();
+	const elapsedTime = clock.getElapsedTime();
+	const deltaTime = elapsedTime - previousTime;
+	previousTime = elapsedTime;
+
+	// Update mixer
+	if (mixer !== null) {
+		mixer.update(deltaTime);
+	}
 
 	// Update controls
 	controls.update();
